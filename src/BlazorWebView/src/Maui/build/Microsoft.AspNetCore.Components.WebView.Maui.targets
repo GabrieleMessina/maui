@@ -44,6 +44,14 @@
       <Content Remove="@(_ContentToUpdate)" />
       <Content Include="@(_ContentToUpdate)" ExcludeFromContentCheck="true" PublishFolderType="None" />
     </ItemGroup>
+
+  </Target>
+
+  <Target Name="_RemoveStaticWebAssetsDevelopmentManifest" BeforeTargets="GetCopyToOutputDirectoryItems">
+    <!-- Remove the development manifest from the output since its not used and it will otherwise get incorrectly loaded in production. -->
+    <ItemGroup>
+      <ContentWithTargetPath Remove="$(StaticWebAssetDevelopmentManifestPath)" />
+    </ItemGroup>
   </Target>
 
   <!-- Targets temporarily remove Content items in various folders so that they don't conflict with iOS/MacCatalyst SDK tasks -->
