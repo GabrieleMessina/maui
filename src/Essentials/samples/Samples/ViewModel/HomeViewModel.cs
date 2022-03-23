@@ -105,6 +105,12 @@ namespace Samples.ViewModel
 					new[] { "files", "picking", "filesystem", "storage" }),
 				new SampleItem(
 					"📁",
+					"Folder Picker",
+					typeof(FolderPickerPage),
+					"Easily pick files from storage.",
+					new[] { "files", "picking", "filesystem", "storage" }),
+				new SampleItem(
+					"📁",
 					"File System",
 					typeof(FileSystemPage),
 					"Easily save files to app data.",
