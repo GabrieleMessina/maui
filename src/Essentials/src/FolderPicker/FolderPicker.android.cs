@@ -9,7 +9,10 @@ namespace Microsoft.Maui.Essentials
 	{
 		static async Task<string> PlatformPickAsync(FolderPickerOptions options)
 		{
-			// Essentials supports >= API 19 where this action is available
+			// Essentials supports >= API 19 but this action is available only on >= API 21
+			if (!OperatingSystem.IsAndroidVersionAtLeast(21))
+				return null;
+			
 			var action = Intent.ActionOpenDocumentTree;
 
 			var intent = new Intent(action);
