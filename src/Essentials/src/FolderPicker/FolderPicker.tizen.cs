@@ -11,7 +11,7 @@ namespace Microsoft.Maui.Essentials
 {
 	public static partial class FolderPicker
 	{
-		static Task<IEnumerable<FileResult>> PlatformPickAsync(PickOptions options, bool allowMultiple = false)
+		static Task<string> PlatformPickAsync(FolderPickerOptions options)
 		{
 			throw new NotImplementedException();
 		}

@@ -1,18 +1,26 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Windows.Storage;
-using Windows.Storage.AccessCache;
 using Windows.Storage.Pickers;
+using WindowsFolderPicker = Windows.Storage.Pickers.FolderPicker;
 
 namespace Microsoft.Maui.Essentials
 {
 	public static partial class FolderPicker
 	{
-		static Task<IEnumerable<FileResult>> PlatformPickAsync(PickOptions options, bool allowMultiple = false)
+		static async Task<string> PlatformPickAsync(FolderPickerOptions options)
 		{
-			throw new NotImplementedException();
+			var folderPicker = new WindowsFolderPicker()
+			{
+				ViewMode = PickerViewMode.List,
+			};
+			folderPicker.FileTypeFilter.Add("*");
+
+			var hwnd = Platform.CurrentWindowHandle;
+			WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
+
+			var result = await folderPicker.PickSingleFolderAsync();
+
+			return result?.Path;
 		}
 	}
 }

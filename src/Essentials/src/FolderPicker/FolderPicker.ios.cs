@@ -12,9 +12,60 @@ namespace Microsoft.Maui.Essentials
 {
 	public static partial class FolderPicker
 	{
-		static Task<IEnumerable<FileResult>> PlatformPickAsync(PickOptions options, bool allowMultiple = false)
+		static async Task<string> PlatformPickAsync(FolderPickerOptions options)
 		{
-			throw new NotImplementedException();
+			var allowedUtis = new string[]
+			{
+				UTType.Folder
+			};
+
+			var tcs = new TaskCompletionSource<string>();
+
+			using var documentPicker = new UIDocumentPickerViewController(allowedUtis, UIDocumentPickerMode.Open);
+			if (OperatingSystem.IsIOSVersionAtLeast(11, 0))
+				documentPicker.AllowsMultipleSelection = false;
+			documentPicker.Delegate = new PickerDelegate
+			{
+				PickHandler = urls => GetFileResults(urls, tcs)
+			};
+
+			if (documentPicker.PresentationController != null)
+			{
+				documentPicker.PresentationController.Delegate =
+					new Platform.UIPresentationControllerDelegate(() => GetFileResults(null, tcs));
+			}
+
+			var parentController = Platform.GetCurrentViewController();
+
+			parentController.PresentViewController(documentPicker, true, null);
+
+			return await tcs.Task;
+		}
+
+		class PickerDelegate : UIDocumentPickerDelegate
+		{
+			public Action<NSUrl[]> PickHandler { get; set; }
+
+			public override void WasCancelled(UIDocumentPickerViewController controller)
+				=> PickHandler?.Invoke(null);
+
+			public override void DidPickDocument(UIDocumentPickerViewController controller, NSUrl[] urls)
+				=> PickHandler?.Invoke(urls);
+
+			public override void DidPickDocument(UIDocumentPickerViewController controller, NSUrl url)
+				=> PickHandler?.Invoke(new NSUrl[] { url });
+		}
+
+		static void GetFileResults(NSUrl[] urls, TaskCompletionSource<string> tcs)
+		{
+			try
+			{
+				tcs.TrySetResult(urls?[0]?.ToString() ?? "");
+			}
+			catch (Exception ex)
+			{
+				tcs.TrySetException(ex);
+			}
 		}
 	}
 }
